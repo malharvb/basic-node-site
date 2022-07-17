@@ -1,38 +1,25 @@
-const http = require('http')
-const fs = require('fs/promises')
+const path = require('path')
+const express = require('express')
+const app = express()
 
-const getHtml = async (fileName) => {
-    const data = await fs.readFile(`./${fileName}`, { encoding: 'utf8' })
-    return data
-}
+app.use(express.static('./'))
 
-
-const server = http.createServer(async (req,res) => {
-    res.statusCode = 200
-    res.setHeader('Content-Type', 'text/html')
-    
-    let currentPageContent
-
-    if(req.url === '/')
-    {
-        currentPageContent = await getHtml('index.html')
-    }
-    else if(req.url === '/about')
-    {
-        currentPageContent = await getHtml('about.html') 
-    }
-    else if(req.url === '/contact-me')
-    {
-        currentPageContent = await getHtml('contact-me.html') 
-    }
-    else
-    {
-        currentPageContent = await getHtml('404.html')
-    }
-    
-    res.end(currentPageContent)
+app.get('/', (req,res) => {
+    res.sendFile(path.join(__dirname,'/index.html'));
 })
 
-server.listen(8080, () => {
+app.get('/about', (req,res) => {
+    res.sendFile(path.join(__dirname,'/about.html'));
+})
+
+app.get('/contact-me', (req,res) => {
+    res.sendFile(path.join(__dirname,'/contact-me.html'));
+})
+
+app.get('*', (req,res) => {
+    res.sendFile(path.join(__dirname,'/404.html'));
+})
+
+app.listen(8080, () => {
     console.log(`Server running at port 8080`)
 })
